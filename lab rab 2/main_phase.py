@@ -28,15 +28,19 @@ def build_basis_vector(c: np.ndarray, B: list) -> np.ndarray:
 
 
 def build_potential_vector(basis_c: np.ndarray, inv_basis_matrix: np.ndarray) -> np.ndarray:
-    return np.dot(basis_c.T, inv_basis_matrix)
+    return np.dot(basis_c.T, inv_basis_matrix).T
 
 
 def build_estimate_vector(potential_vector: np.ndarray, A: np.ndarray, c: np.ndarray) -> np.ndarray:
-    return (np.dot(potential_vector, A) - c.T).T
+    return (np.dot(potential_vector.T, A) - c.T).T
 
 
-def is_optimal_plan(estimate_vector: np.ndarray) -> bool:
-    return (estimate_vector >= 0).all()
+def is_optimal_plan(estimate_vector: np.ndarray, B: list) -> bool:
+    for i in range(0, estimate_vector.shape[0]):
+        if i not in B:
+            if estimate_vector[i, 0] < 0:
+                return False
+    return True
 
 
 def get_j0(estimate_vector: np.ndarray) -> int:
@@ -99,7 +103,7 @@ def main_phase(c: np.ndarray, A: np.ndarray, x: np.ndarray, B: list) -> np.ndarr
         # step 4
         estimate_vector = build_estimate_vector(potential_vector, A, c)
         # step 5
-        if is_optimal_plan(estimate_vector):
+        if is_optimal_plan(estimate_vector, B):
             return x
 
         # step 6
@@ -131,7 +135,6 @@ def main_phase(c: np.ndarray, A: np.ndarray, x: np.ndarray, B: list) -> np.ndarr
         print("New B:\n", B)
 
         # step 1
-        basis_matrix = build_basis_matrix(A, B)
         col = build_basis_matrix(A, [j0])
         is_inv, inv_basis_matrix = reverse_matrix(inv_basis_matrix, col, k)
         if not is_inv:

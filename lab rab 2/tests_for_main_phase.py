@@ -55,7 +55,6 @@ def test_build_potential_vector() -> None:
         exit()
     print("test_build_potential_vector OK")
 
-
 def test_main_phase() -> None:
     c = np.array([[1],
                   [1],
@@ -94,9 +93,93 @@ def test_main_phase() -> None:
     print("test_main_phase OK")
 
 
+def test_not_limited_main_phase() -> None:
+    """
+    x1 -> max
+    x1 >= 0
+    x2 >= 0
+    """
+    c = np.array([[1],
+                  [0],
+                  [0],
+                  [0]])
+
+    A = np.array([[-1, 0, 1, 0],
+                  [0, -1, 0, 1]])
+
+    x = np.array([[1],
+                  [1],
+                  [0],
+                  [0]])
+
+    B = [0, 1]
+
+    try:
+        res = main_phase(c, A, x, B)
+    except NotLimitedError as ex:
+        print(ex)
+        print("test_not_limited_main_phase OK")
+        return
+
+    print("test_not_limited_main_phase failed!")
+    exit()
+
+
+def test_gena_and_cheburashka() -> None:
+    c = np.array([[20],
+                  [25],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0]])
+
+    A = np.array([[1, 2, 1, 0, 0, 0, 0, 0],
+                  [2, 1, 0, 1, 0, 0, 0, 0],
+                  [-1, 0, 0, 0, 1, 0, 0, 0],
+                  [1, 0, 0, 0, 0, 1, 0, 0],
+                  [0, -1, 0, 0, 0, 0, 1, 0],
+                  [0, 1, 0, 0, 0, 0, 0, 1]])
+
+    x = np.array([[0],
+                  [0],
+                  [10],
+                  [11],
+                  [0],
+                  [5],
+                  [0],
+                  [4]])
+
+    B = [2, 3, 4, 5, 6, 7]
+
+    try:
+        res = main_phase(c, A, x, B)
+    except NotLimitedError as ex:
+        print(ex)
+        print("test_gena_and_cheburashka failed!")
+        exit()
+
+    expected = np.array([[4],
+                      [3],
+                      [0],
+                      [0],
+                      [4],
+                      [1],
+                      [3],
+                      [1]])
+
+    if (res != expected).any():
+        print("test_gena_and_cheburashka failed!")
+        print(res)
+        exit()
+    print("test_gena_and_cheburashka OK")
+
 
 def run_tests() -> None:
     test_build_basis_matrix()
     test_build_basis_vector()
     test_build_potential_vector()
     test_main_phase()
+    test_not_limited_main_phase()
+    test_gena_and_cheburashka()
