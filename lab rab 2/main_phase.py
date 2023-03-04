@@ -28,11 +28,11 @@ def build_potential_vector(basis_c: np.ndarray, inv_basis_matrix: np.ndarray) ->
 
 
 def build_estimate_vector(potential_vector: np.ndarray, A: np.ndarray, c: np.ndarray) -> np.ndarray:
-    return np.dot(potential_vector, A) - c
+    return (np.dot(potential_vector, A) - c.T).T
 
 
 def is_optimal_plan(estimate_vector: np.ndarray) -> bool:
-    return (estimate_vector > 0).all()
+    return (estimate_vector >= 0).all()
 
 
 def get_j0(estimate_vector: np.ndarray) -> int:
@@ -43,14 +43,13 @@ def get_j0(estimate_vector: np.ndarray) -> int:
 
 def build_z(inv_basis_matrix: np.ndarray, A: np.ndarray, j0: int) -> np.ndarray:
     A_j0 = np.ndarray([A.shape[0], 1])
+    print("A:\n", A)
     for i in range(0, A.shape[0]):
         A_j0[i, 0] = A[i, j0]
     return np.dot(inv_basis_matrix, A_j0)
 
 
 def build_teta(x: np.ndarray, z: np.ndarray, B: list) -> np.ndarray:
-    print("z:\n", z)
-    print('x:\n', x)
     teta = np.ndarray([z.shape[0], 1])
     for i in range(0, z.shape[0]):
         if z[i, 0] > 0:
@@ -83,47 +82,49 @@ def update_x(x: np.ndarray, j0: int, k: int, j_star: int, teta0: float, B: list,
 
 
 def main_phase(c: np.ndarray, A: np.ndarray, x: np.ndarray, B: list) -> np.ndarray:
-    # step 1
-    basis_matrix = build_basis_matrix(A, B)
-    inv_basis_matrix = np.linalg.inv(basis_matrix)
+    while True:
+        # step 1
+        basis_matrix = build_basis_matrix(A, B)
+        inv_basis_matrix = np.linalg.inv(basis_matrix)
 
-    # step 2
-    basis_c = build_basis_vector(c, B)
+        # step 2
+        basis_c = build_basis_vector(c, B)
 
-    # step 3
-    potential_vector = build_potential_vector(basis_c, inv_basis_matrix)
+        # step 3
+        potential_vector = build_potential_vector(basis_c, inv_basis_matrix)
 
-    # step 4
-    estimate_vector = build_estimate_vector(potential_vector, A, c)
+        # step 4
+        estimate_vector = build_estimate_vector(potential_vector, A, c)
+        print("Estimate_vector:\n", estimate_vector)
+        # step 5
+        if is_optimal_plan(estimate_vector):
+            return x
 
-    # step 5
-    if is_optimal_plan(estimate_vector):
-        return x
+        # step 6
+        j0 = get_j0(estimate_vector)
+        print("j0:", j0)
 
-    # step 6
-    j0 = get_j0(estimate_vector)
+        # step 7
+        z = build_z(inv_basis_matrix, A, j0)
 
-    # step 7
-    z = build_z(inv_basis_matrix, A, j0)
+        # step 8
+        teta = build_teta(x, z, B)
 
-    # step 8
-    teta = build_teta(x, z, B)
+        # step 9 and step 11
+        teta0, k = get_teta0(teta)
 
-    # step 9 and step 11
-    teta0, k = get_teta0(teta)
+        # step 10
+        if not is_limited(teta0):
+            raise NotLimitedError
 
-    # step 10
-    if not is_limited(teta0):
-        raise NotLimitedError
+        # step 11
+        j_star = B[k]
 
-    # step 11
-    j_star = B[k]
+        # step 12
+        B[k] = j0
 
-    # step 12
-    B[k] = j0
+        #step 13
+        update_x(x, j0, k, j_star, teta0, B, z)
 
-    #step 13
-    update_x(x, j0, k, j_star, teta0, B, z)
-
-    print("New x:\n", x)
-    print("New B:\n", B)
+        print("New x:\n", x)
+        print("New B:\n", B)

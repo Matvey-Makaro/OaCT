@@ -16,6 +16,7 @@ def test_build_basis_matrix() -> None:
     if (basis_matrix != expected_basis_matrix).any():
         print("test_build_basis_matrix failed!")
         exit()
+    print("test_build_basis_matrix OK")
 
 
 def test_build_basis_vector() -> None:
@@ -33,6 +34,7 @@ def test_build_basis_vector() -> None:
     if (basis_vector != expected).any():
         print("test_build_basis_matrix failed!")
         exit()
+    print("test_build_basis_vector OK")
 
 
 def test_build_potential_vector() -> None:
@@ -51,6 +53,7 @@ def test_build_potential_vector() -> None:
     if (potential_vector != expected).any():
         print("test_build_basis_matrix failed!")
         exit()
+    print("test_build_potential_vector OK")
 
 
 def test_main_phase() -> None:
@@ -72,7 +75,25 @@ def test_main_phase() -> None:
 
     B = [2, 3, 4]
 
-    main_phase(c, A, x, B)
+    try:
+        res = main_phase(c, A, x, B)
+    except NotLimitedError as ex:
+        print(ex)
+        print("test_main_phase failed!")
+        exit()
+
+    expected = np.array([[3],
+                      [2],
+                      [2],
+                      [0],
+                      [0]])
+
+    if (res != expected).any():
+        print("test_main_phase failed!")
+        exit()
+    print("test_main_phase OK")
+
+
 
 def run_tests() -> None:
     test_build_basis_matrix()
