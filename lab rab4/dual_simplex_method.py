@@ -1,4 +1,5 @@
 import numpy as np
+from matrix_reversal import reverse_matrix
 
 
 def build_basis_matrix(A: np.ndarray, B: list) -> np.ndarray:
@@ -83,12 +84,11 @@ def find_j0(sigma: list) -> int:
 
 
 def dual_simplex_method(c: np.ndarray, A: np.ndarray, b: np.ndarray, B: list) -> np.ndarray:
-    # TODO: Скорее всего вычисления обратной матрицы надо сделать как во 2-ой лабораторной работе
-    while True:
-        # step 1
-        A_basis = build_basis_matrix(A, B)
-        inv_A_basis = np.linalg.inv(A_basis)
+    # step 1
+    A_basis = build_basis_matrix(A, B)
+    inv_A_basis = np.linalg.inv(A_basis)
 
+    while True:
         # step 2
         c_basis = build_basis_vector(c, B)
 
@@ -121,6 +121,14 @@ def dual_simplex_method(c: np.ndarray, A: np.ndarray, b: np.ndarray, B: list) ->
         # step 10
         j0 = find_j0(sigma)
 
-        # TODO: Скорее всего вычисления обратной матрицы надо сделать как во 2-ой лабораторной работе
         # step 11
         B[i] = j0
+
+        # step 1
+        col = build_basis_matrix(A, [j0])
+        is_inv, inv_A_basis = reverse_matrix(inv_A_basis, col, i)
+        if not is_inv:
+            raise RuntimeError("Basis matrix is not inversible")
+
+
+
