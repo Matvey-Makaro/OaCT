@@ -97,7 +97,7 @@ def initial_phase(c: np.ndarray, A: np.ndarray, b: np.ndarray) -> (np.ndarray, l
 
     # step 5
     if not is_task_compatible(x_wave, n):
-        raise RuntimeError("The task is not compatible.")
+        raise RuntimeError("The problem is not feasible.")
 
     # step 6
     x = form_allowable_plan(x_wave, n)
