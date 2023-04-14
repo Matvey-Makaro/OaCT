@@ -22,3 +22,4 @@ def simple_test() -> None:
     B_star = [0, 1]
 
     x = solve_quadratic_prog_problem(c, D, A, x_T, B, B_star)
+    print('x:\n', x)

@@ -163,11 +163,8 @@ def solve_quadratic_prog_problem(c: np.ndarray, D: np.ndarray, A: np.ndarray, x_
     while True:
         # step 1
         c_x_T = calc_c_x_T(c, x_T, D)
-        print('c_x_T:\n', c_x_T)
         u_x_T = calc_u_x_T(c_x_T, A, B)
-        print('\nu_x_T: \n', u_x_T)
         delta_T = calc_delta_T(u_x_T, A, c_x_T)
-        print('\ndelta_T:\n', delta_T)
 
         # step 2
         if is_optimal_plan(delta_T):
@@ -178,17 +175,12 @@ def solve_quadratic_prog_problem(c: np.ndarray, D: np.ndarray, A: np.ndarray, x_
 
         # step 4
         l, idx_to_l_idx = calc_l(B_star, j0, D, A)
-        print("\nl:\n", l)
 
         # step 5
         teta_j0 = calc_teta_j0(l, D, delta_T, j0)
-        print("\nteta_j0\n", teta_j0)
         teta = calc_teta(x_T, l, B_star, idx_to_l_idx)
-        print('\nteta\n', teta)
 
         teta0, j_star = find_teta0(teta, teta_j0, j0, B_star)
-        print("\nteta0\n", teta0)
-        print("\nj_star\n", j_star)
 
         if teta0 == float('infinity'):
             raise RuntimeError("The target function is not unlimited from bottom" \
@@ -196,7 +188,6 @@ def solve_quadratic_prog_problem(c: np.ndarray, D: np.ndarray, A: np.ndarray, x_
 
         # step 6
         x_T = (x_T.T + teta0 * l).T
-        print("\nx_T\n", x_T)
 
         if j_star == j0:
             B_star.append(j_star)
@@ -210,5 +201,3 @@ def solve_quadratic_prog_problem(c: np.ndarray, D: np.ndarray, A: np.ndarray, x_
             else:
                 B[B.index(j_star)] = j0
                 B_star[B.index(j_star)] = j0
-
-
