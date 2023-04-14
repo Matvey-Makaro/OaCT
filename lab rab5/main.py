@@ -1,8 +1,9 @@
 import numpy as np
+from tests import run_tests
 
 
 def main() -> None:
-    pass
+    run_tests()
 
 
 if __name__ == '__main__':
