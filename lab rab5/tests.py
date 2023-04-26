@@ -20,6 +20,24 @@ def simple_test() -> None:
     print("simple_test OK!")
 
 
+def simple_zero_test() -> None:
+    a = np.array([0, 0, 0])
+    b = np.array([0, 0, 0])
+    c = np.array([[0, 0, 0],
+                  [0, 0, 0],
+                  [0, 0, 0]])
+
+    x_expected = np.array([[0, 0, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]])
+
+    x = potential_method(a, b, c)
+
+    if (x != x_expected).any():
+        print("simple_zero_test failed.")
+    print("simple_zero_test OK!")
+
+
 def test_from_website() -> None:
     a = np.array([80, 60, 30, 60])
     b = np.array([10, 30, 40, 50, 70, 30])
@@ -43,3 +61,4 @@ def test_from_website() -> None:
 def run_tests() -> None:
     simple_test()
     test_from_website()
+    simple_zero_test()

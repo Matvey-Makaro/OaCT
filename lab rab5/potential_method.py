@@ -32,6 +32,16 @@ def northwest_node_method(a: np.ndarray, b: np.ndarray) -> (np.ndarray, list):
             a_copy[i] -= b_copy[j]
             j += 1
 
+    i += 1
+    j += 1
+    while i < m:
+        B.append((i, j - 2))
+        i += 1
+
+    while j < n:
+        B.append((i - 2, j))
+        j += 1
+
     return x, B
 
 
